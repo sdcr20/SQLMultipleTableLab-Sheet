@@ -231,6 +231,7 @@ SELECT EmployeeName FROM Employee WHERE DepartmentName = 'Marketing';
 
 SELECT DISTINCT ItemName From Sale, Department WHERE Sale.DepartmentName = Department.DepartmentName AND Department.DepartmentFloor = 2;
 
+
 SELECT DISTINCT ItemName
 FROM (Sale NATURAL JOIN Department)
 WHERE Department.DepartmentFloor = 2;
@@ -238,6 +239,8 @@ WHERE Department.DepartmentFloor = 2;
 SELECT DISTINCT ItemName
 FROM (Sale JOIN Department)
 WHERE Department.DepartmentFloor = 2;
+
+---- Identify by floor the items available on floors other than the second floor
 
 SELECT DISTINCT ItemName, Department.DepartmentFloor AS 'On Floor'
 FROM Delivery, Department
@@ -248,18 +251,28 @@ ORDER BY Department.DepartmentFloor, ItemName;
 
 SELECT * FROM Item;
 
+--Find the average salary of the employees in the Clothes department
+
 SELECT AVG(EmployeeSalary)
 FROM Employee
 WHERE DepartmentName = 'Clothes';
+
+--5. Find, for each department, the average salary of the employees in that department and report
+--by descending salary.
 
 SELECT DepartmentName, AVG(EmployeeSalary) AS 'Average Salary'
 FROM Employee
 GROUP BY DepartmentName
 ORDER BY AVG(EmployeeSalary) DESC;
 
+--6. List the items delivered by exactly one supplier (i.e. the items always delivered by the same
+--supplier).
+
 SELECT ItemName
 FROM Delivery
 GROUP BY ItemName HAVING COUNT (DISTINCT SupplierNumber) = 1;
+
+--7. List the suppliers that deliver at least 10 items.
 
 SELECT Supplier.SupplierNumber, Supplier.SupplierName
 FROM Delivery, Supplier
@@ -267,10 +280,14 @@ WHERE Delivery.SupplierNumber = Supplier.SupplierNumber
 GROUP BY Supplier.SupplierNumber, Supplier.SupplierName
 HAVING COUNT(DISTINCT Delivery.ItemName) >= 10;
 
+--8. Count the number of direct employees of each manager
+
 SELECT Boss.EmployeeNumber, Boss.EmployeeName, COUNT(*) AS 'Employees'
 FROM Employee AS Worker, Employee AS Boss
 WHERE Worker.BossNumber = Boss.EmployeeNumber
 GROUP BY Boss. EmployeeNumber, Boss.EmployeeName;
+
+--9. Find, for each department that sells items of type 'E' the average salary of the employees.
 
 SELECT Department.DepartmentName, AVG(EmployeeSalary) AS 'Average Salary'
 FROM Employee, Department, Sale, Item
@@ -279,6 +296,8 @@ AND Department.DepartmentName = Sale.DepartmentName
 AND Sale.ItemName = Item.ItemName
 AND ItemType = 'E'
 Group By Department.DepartmentName;
+
+--10. Find the total number of items of type 'E' sold by departments on the second floor
 
 SELECT SUM(SaleQuantity) AS 'Number of Items'
 FROM Department, Sale, Item
